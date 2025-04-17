@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WEB_URL="http://localhost:3000"
+DOCS_URL="http://localhost:3000/documentation"
 DOCKER_FILE_PATH=docker-compose.yml
 DOCKER_ENV_PATH=.env
 
@@ -63,7 +65,7 @@ function startServices() {
     echo "building your own image"
     buildYourOwnImage
 
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH up -d migration redis football-match-db"
+    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH up -d migration redis football-match-db"
 
     local migration_container_id=$(docker container ls -aq -f "name=football-match-migration")
     if [ -n "$migration_container_id" ]; then
@@ -92,7 +94,7 @@ function startServices() {
         fi
     fi
 
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH up -d football-match"
+    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH up -d football-match"
 
     local api_container_id=$(docker container ls -q -f "name=football-match-development")
     local idx2=0
@@ -110,11 +112,12 @@ function startServices() {
     echo "   Plane Server started successfully"
     echo ""
     echo "   You can access the application at $WEB_URL"
+    echo "   You can access the documentation at $DOCS_URL"
     echo ""
 }
 
 function stopServices() {
-    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH --env-file=$DOCKER_ENV_PATH down"
+    /bin/bash -c "$COMPOSE_CMD -f $DOCKER_FILE_PATH  down"
 }
 
 function askForAction() {
