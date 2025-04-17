@@ -1,0 +1,89 @@
+---
+x-configs:
+  &app-config-env
+  API_PREFIX: ${API_PREFIX:-api}
+  TZ: ${TZ:-Asia/Ho_Chi_Minh}
+  NODE_ENV: ${NODE_ENV:-development}
+  PORT: ${PORT:-3000}
+  SEVER_DEV_URL: ${SEVER_DEV_URL:-http://localhost:3000}
+  CRAWL_URL: ${CRAWL_URL:-https://www.oddsmath.com}
+  REDIS_HOST: redis
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81}
+
+
+x-database-environment:
+  &database-env
+  DB_DATABASE: ${DB_DATABASE:-footballodds}
+  DB_USERNAME: ${DB_USERNAME:-footballodds}
+  DB_PASSWORD: ${DB_PASSWORD:-secret}
+  DB_HOST: football-match-db
+  DB_PORT: 5432
+
+services:
+  football-match:
+    image: football-match-development:${APP_RELEASE:-latest}
+    container_name: football-match-development
+    ports:
+      - "3000:3000"
+    environment:
+      <<: [*app-config-env, *database-env]
+    networks:
+      - football-match-network
+    depends_on:
+      football-match-db:
+        condition: service_healthy
+        required: true
+    restart: always
+
+  migration:
+    image: football-match-migration:${APP_RELEASE:-latest}
+    container_name: football-match-migration
+    environment:
+      <<: [*database-env]
+    command: ["npm", "run", "migration:run"]
+    networks:
+      - football-match-network
+    depends_on:
+      football-match-db:
+        condition: service_healthy
+        required: true
+    restart: "on-failure"
+
+  football-match-db:
+    image: postgres:14
+    container_name: football-match-db
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-footballodds}
+      POSTGRES_USER: ${DB_USERNAME:-footballodds}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgresql:/var/lib/postgresql/data
+    networks:
+      - football-match-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:alpine
+    container_name: redis-development
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    restart: always
+    command: redis-server --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    networks:
+      - football-match-network
+
+networks:
+  football-match-network:
+    driver: bridge

@@ -1,0 +1,15 @@
+---
+services:
+  football-match:
+    image: football-match-development:${APP_RELEASE:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+
+  migration:
+    image: football-match-migration:${APP_RELEASE:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build

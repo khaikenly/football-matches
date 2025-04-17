@@ -1,0 +1,19 @@
+- danh sách trận đấu [theo ngày]
+- Giải đấu \ Trận đấu của giải
+- Tỉ lệ full: 1 thắng, X: hoà, 2: thua (tên ncc, tỉ lệ)
+- CSDL: PostgreSQL
+- schema: [tự quyết định)
+
+endpoint:
+danh sach trran dau: GET /api/v1/matches?page=1&limit=20
+chi tiet: GET /api/v1/odds/:matchid
+
+1. Crawlers
+2. Postgresql
+3. BE API
+
+Nâng cao:
+Containerize 3 modules
+Cache Redis + docker compose
+
+Deadline: 19/04/2025
