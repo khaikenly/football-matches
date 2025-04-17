@@ -126,17 +126,17 @@ function askForAction() {
         echo "Select a Action you want to perform:"
         echo "   1) Start"
         echo "   2) Stop"
-        echo "   0) Exit"
+        echo "   3) Exit"
         echo 
-        read -p "Action [2]: " ACTION
-        until [[ -z "$ACTION" || "$ACTION" =~ ^[1-2]$ ]]; do
+        read -p "Action [1]: " ACTION
+        until [[ -z "$ACTION" || "$ACTION" =~ ^[1-3]$ ]]; do
             echo "$ACTION: invalid selection."
-            read -p "Action [2]: " ACTION
+            read -p "Action [1]: " ACTION
         done
 
         if [ -z "$ACTION" ];
         then
-            ACTION=2
+            ACTION=1
         fi
         echo
     fi
@@ -147,7 +147,7 @@ function askForAction() {
     elif [ "$ACTION" == "2" ] || [ "$DEFAULT_ACTION" == "stop" ];
     then
         stopServices
-    elif [ "$ACTION" == "0" ]
+    elif [ "$ACTION" == "3" ]
     then
         exit 0
     else
