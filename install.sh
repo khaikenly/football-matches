@@ -166,5 +166,6 @@ else
     COMPOSE_CMD="docker compose"
 fi
 
+check_docker
 print_header
 askForAction "$@"
